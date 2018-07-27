@@ -3,7 +3,11 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const favicon = require('serve-favicon')
 
+
 app.use(favicon(__dirname + '/favicon.ico'));
+
+
+
 app.get('/', function(request, response) {
     response.sendFile("/index.html", {"root": "."});
 })
