@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Simple Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" /> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            font-size: 18px;
+            font-family: "Open Sans", sans-serif;
+            color: #5f5f5f;
+        }
+        *,
+        *::before,
+        *::after{
+            box-sizing: inherit;
+        }
+        html {
+            box-sizing: border-box;
+        }
+        .container{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 100vw;
+            height: 100vh;
+        }
+        .chat__list {
+            width: 100%;
+            list-style: none;
+        }
+        .chat__list-item {
+            padding: 20px;
+            position: relative;
+        }
+        .chat__list-item:before {
+            position: absolute;
+            top: 4;
+            left: 0px;
+            width: 5px;
+            height: 5px;
+            content:"\003e";
+            color: currentColor;
+        }
+        .chat__list-item:nth-child(odd) {
+            background-color: #f5f5f5;
+            color: red;
+        }
+        .chat__list-item:not(:last-child){
+            margin-bottom: 5px;
+        }
+        .chat__input{
+            padding: 10px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <main class="container">
+            <ul class='chat__list'>
+                <li class='chat__list-item' v-for='msg in messages'>
+                    {{msg}}
+                </li>
+            </ul>
+            <input placeholder='type something' class='chat__input' type="text" v-model='message' @keyup.enter='sendMessage'>
+        </main>
+    </div>
+    <script>
+        const socket = io();
+        new Vue({
+            el: '#root', 
+            data: () => ({
+                messages: [],
+                message: ''
+            }),
+            methods: {
+                sendMessage() {
+                    socket.emit('message.sent', this.message);
+                    this.message = '';
+                }
+            },
+            mounted() {
+                socket.on('message', (msg) => {
+                    this.messages.push(msg);
+                })
+            }
+        })
+    </script>
+</body>
+</html>
